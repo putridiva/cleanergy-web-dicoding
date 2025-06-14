@@ -1,64 +1,65 @@
+import CONFIG from '../config';
+
 class PickUpPage {
   async render() {
-  return `
-    <header class="navbar">
-      <img src="/logo.png" alt="Logo" class="logo" />
-      <nav>
-        <a href="#/dashboard">Beranda</a>
-        <a href="#/riwayat">Riwayat</a>
-        <button id="ajukan-penjemputan">Ajukan Penjemputan</button>
-      </nav>
-    </header>
+    return `
+      <header class="navbar">
+        <img src="/logo.png" alt="Logo" class="logo" />
+        <nav>
+          <a href="#/dashboard">Beranda</a>
+          <a href="#/riwayat">Riwayat</a>
+          <button id="ajukan-penjemputan">Ajukan Penjemputan</button>
+        </nav>
+      </header>
 
-    <main class="form-penjemputan">
-      <div class="form-content">
-        <div class="form-image">
-          <img src="./src/assets/assets/file-icon.png" alt="File Icon" />
-          <br />
-          <img id="preview-image" src="" alt="Preview Gambar" style="max-width: 200px; display: none; margin-top: 10px;" />
+      <main class="form-penjemputan">
+        <div class="form-content">
+          <div class="form-image">
+            <img src="./src/assets/assets/file-icon.png" alt="File Icon" />
+            <br />
+            <img id="preview-image" src="" alt="Preview Gambar" style="max-width: 200px; display: none; margin-top: 10px;" />
+          </div>
+          <div class="form-fields">
+            <label for="kategori">Kategori</label>
+            <select id="kategori" disabled style="margin-bottom: 10px;"></select>
+            <hr />
+
+            <label for="quantity">Quantity (Kg)</label>
+            <input type="number" id="quantity" placeholder="Masukkan jumlah (kg)" style="margin-bottom: 10px;" />
+            <hr />
+
+            <label for="harga">Harga / kg</label>
+            <input type="number" id="harga" disabled />
+            <hr />
+
+            <label for="total">Total Harga</label>
+            <input type="number" id="total" disabled />
+            <hr />
+
+            <input type="file" id="file-upload" accept="image/*" style="margin-bottom: 10px;" />
+            <button class="btn-upload" id="upload-button">Simpan Data</button>
+          </div>
         </div>
-        <div class="form-fields">
-  <label for="kategori">Kategori</label>
-  <select id="kategori" disabled style="margin-bottom: 10px;"></select>
-  <hr />
+      </main>
 
-  <label for="quantity">Quantity (Kg)</label>
-  <input type="number" id="quantity" placeholder="Masukkan jumlah (kg)" style="margin-bottom: 10px;" />
-  <hr />
-
-  <label for="harga">Harga / kg</label>
-  <input type="number" id="harga" disabled />
-  <hr />
-
-  <label for="total">Total Harga</label>
-  <input type="number" id="total" disabled />
-  <hr />
-
-  <input type="file" id="file-upload" accept="image/*" style="margin-bottom: 10px;" />
-  <button class="btn-upload" id="upload-button">Simpan Data</button>
-</div>
-
-      </div>
-    </main>
-
-    <footer>
-      <div class="footer-logo">
-        <img src="/logo.png" alt="Logo" />
-      </div>
-      <div class="footer-info">
-        <h4>Kantor</h4>
-        <p>Jl. Raya Jember No.KM13, Kawang, Labanasem, Kec. Kabat,<br />
-        Kabupaten Banyuwangi, Jawa Timur 68461</p>
-      </div>
-      <div class="footer-links">
-        <h4>Informasi</h4>
-        <p><a href="#/dashboard">Beranda</a></p>
-        <p><a href="#/riwayat">Riwayat</a></p>
-        <p><a href="#/pick-up">Ajukan Penjemputan</a></p>
-      </div>
-    </footer>
-  `;
-}
+      <footer>
+        <div class="footer-logo">
+          <img src="/logo.png" alt="Logo" />
+        </div>
+        <div class="footer-info">
+          <h4>Kantor</h4>
+          <p>Jl. Raya Jember No.KM13, Kawang, Labanasem, Kec. Kabat,<br />
+          Kabupaten Banyuwangi, Jawa Timur 68461</p>
+        </div>
+        <div class="footer-links">
+          <h4>Informasi</h4>
+          <p><a href="#/dashboard">Beranda</a></p>
+          <p><a href="#/riwayat">Riwayat</a></p>
+          <p><a href="#/pick-up">Ajukan Penjemputan</a></p>
+        </div>
+      </footer>
+    `;
+  }
 
   async afterRender() {
     const fileInput = document.getElementById('file-upload');
@@ -73,7 +74,7 @@ class PickUpPage {
     let selectedCategory = null;
 
     async function loadKategori() {
-      const response = await fetch("http://localhost:8000/kategori");
+      const response = await fetch(`${CONFIG.BASE_URL}/kategori`, { mode: 'cors' });
       const data = await response.json();
       kategoriList = data;
 
@@ -118,7 +119,6 @@ class PickUpPage {
       const file = this.files[0];
       if (!file) return;
 
-      // Tampilkan preview
       const reader = new FileReader();
       reader.onload = function (e) {
         previewImage.src = e.target.result;
@@ -126,19 +126,18 @@ class PickUpPage {
       };
       reader.readAsDataURL(file);
 
-      // Kirim ke endpoint /predict
       const formData = new FormData();
       formData.append("file", file);
 
       try {
-        const response = await fetch("http://localhost:8000/predict", {
+        const response = await fetch(`${CONFIG.BASE_URL}/predict`, {
           method: "POST",
-          body: formData
+          body: formData,
+          mode: 'cors'
         });
         const result = await response.json();
         const klasifikasi = result.predicted_class;
 
-        // Cari data kategori hasil prediksi
         const kategoriData = kategoriList.find(k => k.kategori === klasifikasi);
         if (kategoriData) {
           kategoriSelect.value = kategoriData.kategori;
