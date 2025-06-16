@@ -3,7 +3,7 @@ class Login {
     return `
       <div class="auth-container">
         <div class="auth-image">
-          <img src="/laki.png" alt="Orang buang sampah" />
+          <img src="laki.png" alt="Orang buang sampah" />
         </div>
         <div class="auth-form">
           <h2>Masuk</h2>
