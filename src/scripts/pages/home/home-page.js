@@ -11,7 +11,7 @@ export default class HomePage {
           </div>
         </div>
         <div class="hero-image">
-          <img src="./images/cleanergy.png" alt="Orang menjaga lingkungan" />
+          <img src="/cleanergy.png" alt="Orang menjaga lingkungan" />
         </div>
         <div class="features">
           <div class="feature-card">
